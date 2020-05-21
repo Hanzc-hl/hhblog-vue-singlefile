@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <link rel="stylesheet" href='./style.css' />
+  <title>hhblog-vue-singlefile</title>
+</head>
+
+<body>
+  <!-- attribute and event name in html should be kebab-case -->
+  <div id="app" class='app'>
+    <app-header :page-key='pageKey' @click-tab='clickTab'></app-header>
+    <app-content :page-key='pageKey'></app-content>
+  </div>
+
+  <script>
+    const appHeader = Vue.component('app-header', {
+      data() {    // origin data
+        return {
+          pageTabs: ['writePlan', 'writing', 'writen']
+        }
+      },
+      props: ['pageKey'],  // outer data
+      methods: {  // v-on handlers
+        clickTab(item) {
+          this.$emit('click-tab', item);
+        }
+      },
+      template: `
+        <div class='app-header'>
+          <span v-for='(item, index) in pageTabs' 
+            v-bind:key='index' 
+            v-on:click="clickTab(item)"
+            class="app-header-pagetab">
+            {{ item }}
+          </span>
+        </div>
+        `
+    })
+
+    const appContent = Vue.component('app-content', {
+      data() {    // origin data
+        return {
+          pageContents: [
+            'writePlan',
+            'writing',
+            'writen'
+          ]
+        }
+      },
+      props: ['pageKey'],  // outer data
+      methods: {  // v-on handlers
+
+      },
+      computed: {
+        pageComponent() {
+          // pascal-case convert to kebab-case
+          return this.pageKey && this.pageKey.replace(/([A-Z])/g, function ($, $1) {
+            return '-' + $1.toLowerCase()
+          })
+        }
+      },
+      template:
+        `<div class='app-content'>
+          <div :is='pageComponent' keep-alive> </div>
+        </div>`
+    })
+
+    const writePlan = Vue.component('write-plan', {
+      data() {    // origin data
+        return {
+          content: `yeah, this is a write plan!`
+        }
+      },
+      props: [],  // outer data
+      methods: {  // v-on handlers
+      },
+      template: `
+        <div class='write-plan'>
+          <p>{{ content }}</p>
+        </div>
+        `
+    })
+    const writing = Vue.component('writing', {
+      data() {    // origin data
+        return {
+          content: `yeah, this is what i'm writing!`
+        }
+      },
+      props: [],  // outer data
+      methods: {  // v-on handlers
+      },
+      template: `
+        <div class='writing'>
+          <p>{{ content }}</p>
+        </div>
+        `
+    })
+    const writen = Vue.component('writen', {
+      data() {    // origin data
+        return {
+          content: `yeah, this is what i've writen!`
+        }
+      },
+      props: [],  // outer data
+      methods: {  // v-on handlers
+      },
+      template: `
+        <div class='writen'>
+          <p>{{ content }}</p>
+        </div>
+        `
+    })
+
+    const app = new Vue({
+      el: "#app",
+      data: {
+        pageKey: 'writen'
+      },
+      methods: {
+        clickTab($event) {
+          this.pageKey = $event || this.pageKey;
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
